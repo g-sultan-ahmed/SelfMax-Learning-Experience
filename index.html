@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ETM COURSES — Elite UI</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--bg:#0a0202;
+--card:rgba(30,5,5,.78);
+--glass:rgba(30,5,5,.6);
+--text:#f5dede;
+
+--primary:#ef4440;   /* crimson red */
+--secondary:#eb0000; /* rose red */
+--accent:#ceff90;    /* deep blood red */
+
+--radius:22px;
+--blur:32px;
+--glow:0 0 45px rgba(239,68,68,.65);
+}
+
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body{
+margin:0;
+font-family:Inter,system-ui;
+background:#020617;
+color:var(--text);
+min-height:100vh;
+overflow-x:hidden;
+}
+
+/* Floating ambient glow */
+body::before{
+content:"";
+position:fixed;
+inset:-40%;
+background:
+radial-gradient(circle at 20% 20%, rgba(56,189,248,.22), transparent 35%),
+radial-gradient(circle at 80% 30%, rgba(168,85,247,.22), transparent 35%),
+radial-gradient(circle at 50% 80%, rgba(34,197,94,.22), transparent 40%);
+animation:floatGlow 26s linear infinite;
+pointer-events:none;
+z-index:-3;
+}
+
+@keyframes floatGlow{
+0%{transform:translate(0,0)}
+50%{transform:translate(-8%,6%)}
+100%{transform:translate(0,0)}
+}
+
+canvas{
+position:fixed;
+inset:0;
+z-index:-2;
+}
+
+header{
+position:sticky;
+top:0;
+z-index:30;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:16px 40px;
+background:var(--glass);
+backdrop-filter:blur(var(--blur));
+border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+header h1{
+margin:0;
+font-size:26px;
+font-weight:900;
+background:linear-gradient(135deg,var(--primary),var(--secondary),var(--accent));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+button{
+border:none;
+background:linear-gradient(135deg,var(--primary),var(--secondary));
+padding:12px 26px;
+border-radius:999px;
+color:white;
+font-weight:700;
+cursor:pointer;
+transition:.35s cubic-bezier(.175,.885,.32,1.275);
+box-shadow:0 12px 25px rgba(56,189,248,.35);
+}
+
+button:hover{
+transform:translateY(-3px) scale(1.06);
+box-shadow:var(--glow);
+}
+
+.hero{
+padding:90px 20px 30px;
+text-align:center;
+}
+
+.hero h2{
+font-size:clamp(44px,6vw,72px);
+margin:0 0 14px;
+font-weight:900;
+background:linear-gradient(135deg,var(--primary),var(--secondary),var(--accent));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.hero p{
+font-size:20px;
+opacity:.9;
+}
+
+.container{
+max-width:1280px;
+margin:auto;
+padding:20px 22px 70px;
+}
+
+.courses{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:36px;
+perspective:1400px;
+}
+
+.course{
+background:var(--card);
+border-radius:var(--radius);
+padding:22px;
+backdrop-filter:blur(var(--blur));
+display:flex;
+flex-direction:column;
+position:relative;
+overflow:hidden;
+transform-style:preserve-3d;
+transition:.45s cubic-bezier(.175,.885,.32,1.275);
+}
+
+.course::after{
+content:"";
+position:absolute;
+inset:-1px;
+border-radius:inherit;
+background:linear-gradient(135deg,var(--primary),var(--secondary),var(--accent));
+opacity:.35;
+filter:blur(24px);
+z-index:-1;
+transition:.45s;
+}
+
+.course:hover::after{opacity:.85}
+
+.course:hover{
+transform:translateY(-12px) rotateX(4deg) rotateY(-3deg) scale(1.04);
+box-shadow:0 30px 70px rgba(56,189,248,.28);
+}
+
+.course img{
+width:100%;
+border-radius:14px;
+margin-bottom:16px;
+}
+
+.course h3{margin:6px 0;font-size:22px}
+
+.course p{
+font-size:14px;
+opacity:.9;
+line-height:1.7;
+}
+
+.bottom{
+margin-top:18px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.price{
+font-size:24px;
+font-weight:900;
+background:linear-gradient(135deg,var(--primary),var(--secondary));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.cart-panel{
+position:fixed;
+right:-420px;
+top:0;
+height:100%;
+width:400px;
+background:var(--card);
+backdrop-filter:blur(40px);
+box-shadow:-25px 0 80px rgba(0,0,0,.75);
+transition:.6s cubic-bezier(.175,.885,.32,1.275);
+padding:26px;
+z-index:50;
+display:flex;
+flex-direction:column;
+}
+
+.cart-panel.active{right:0}
+
+.cart-items{
+flex:1;
+overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:14px;
+}
+
+.cart-item{
+background:rgba(255,255,255,.06);
+border-radius:14px;
+padding:14px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.remove{
+background:#ef4444;
+padding:6px 14px;
+border-radius:999px;
+font-size:12px;
+}
+
+.cart-total{
+font-size:24px;
+font-weight:900;
+margin-top:16px;
+text-align:center;
+}
+
+.toast{
+position:fixed;
+bottom:40px;
+left:50%;
+transform:translateX(-50%) translateY(40px);
+background:linear-gradient(135deg,var(--primary),var(--secondary));
+color:white;
+padding:14px 30px;
+border-radius:999px;
+opacity:0;
+pointer-events:none;
+transition:.4s cubic-bezier(.175,.885,.32,1.275);
+box-shadow:0 12px 35px rgba(56,189,248,.45);
+z-index:60;
+}
+
+.toast.show{
+opacity:1;
+transform:translateX(-50%) translateY(0);
+}
+
+footer{
+text-align:center;
+padding:30px;
+opacity:.6;
+font-size:13px;
+}
+
+@media(max-width:600px){
+.hero{padding:80px 14px 25px}
+.cart-panel{width:100%}
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="particles"></canvas>
+
+<header>
+<h1>⚙️ ETM Sources</h1>
+<button id="cartBtn">Cart (<span id="count">0</span>)</button>
+</header>
+
+<section class="hero">
+<h2>SelfMax Learning Experience</h2>
+<p>Premium Courses • Advanced Methods • Self Improvement</p>
+</section>
+
+<main class="container">
+<div class="courses" id="courseGrid"></div>
+</main>
+
+<aside class="cart-panel" id="cart">
+<div class="cart-header">
+<h3>Your Cart</h3>
+<button class="close-cart" onclick="cartPanel.classList.remove('active')">← Back</button>
+</div>
+<div class="cart-items" id="items"></div>
+<div class="cart-total">Total: $<span id="total">0</span></div>
+</aside>
+
+<div class="toast" id="toast">Added to Cart</div>
+
+<footer>© 2026 ETM COURSES — Elite UI Edition</footer>
+
+<script>
+const courses=[
+{name:"Cost Self Masterclass",price:49,img:1,desc:"Learn self-system, cost control, mogging, and smart mental habits for real life."},
+{name:"Business Bootcamp",price:59,img:2,desc:"Business automation, artificial implementation, ML pipelines, AI engineering & analytics systems."},
+{name:"Health Literacy",price:79,img:3,desc:"Exercise guidelines, fitness principles, stamina & strength training routine"},
+{name:"Metacognition Mog",price:95,img:4,desc:"Mental Maxing, mind micro-management & Mortal psychology mastery."}
+];
+
+const grid=document.getElementById("courseGrid");
+const cartPanel=document.getElementById("cart");
+const cartBtn=document.getElementById("cartBtn");
+const items=document.getElementById("items");
+const totalEl=document.getElementById("total");
+const countEl=document.getElementById("count");
+const toast=document.getElementById("toast");
+
+let cart=JSON.parse(localStorage.getItem("cart")||"[]");
+
+function renderCourses(){
+grid.innerHTML=courses.map((c,i)=>`
+<div class="course">
+<img src="https://picsum.photos/600/360?${c.img}">
+<h3>${c.name}</h3>
+<p>${c.desc}</p>
+<div class="bottom">
+<span class="price">$${c.price}</span>
+<button onclick="addToCart(${i})">Add</button>
+</div>
+</div>`).join("");
+}
+
+function renderCart(){
+items.innerHTML="";
+let total=0;
+cart.forEach((c,i)=>{
+total+=c.price;
+items.innerHTML+=`
+<div class="cart-item">
+<span>${c.name}</span>
+<button class="remove" onclick="removeItem(${i})">×</button>
+</div>`;
+});
+totalEl.textContent=total;
+countEl.textContent=cart.length;
+localStorage.setItem("cart",JSON.stringify(cart));
+}
+
+function addToCart(i){
+cart.push(courses[i]);
+renderCart();
+toast.classList.add("show");
+setTimeout(()=>toast.classList.remove("show"),1400);
+}
+
+function removeItem(i){
+cart.splice(i,1);
+renderCart();
+}
+
+cartBtn.onclick=()=>cartPanel.classList.toggle("active");
+
+renderCourses();
+renderCart();
+
+/* Floating particle system */
+const canvas=document.getElementById("particles");
+const ctx=canvas.getContext("2d");
+let w,h;
+
+function resize(){
+w=canvas.width=window.innerWidth;
+h=canvas.height=window.innerHeight;
+}
+window.addEventListener("resize",resize);
+resize();
+
+const particles=Array.from({length:400},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*2+1,v:Math.random()*0.6+0.3}));
+
+function animate(){
+ctx.clearRect(0,0,w,h);
+particles.forEach(p=>{
+p.y+=p.v;
+if(p.y>h){p.y=0;p.x=Math.random()*w}
+ctx.beginPath();
+ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+ctx.fillStyle="rgba(56,189,248,.25)";
+ctx.fill();
+});
+requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+</body>
+</html>
