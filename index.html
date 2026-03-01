@@ -389,6 +389,81 @@ font-size:13px;
     .fab-contact { bottom: 20px; right: 20px; width: 50px; height: 50px;}
 }
 
+    /* EMAIL POPUP MODAL */
+.email-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.7);
+    backdrop-filter: blur(14px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.4s ease;
+}
+
+.email-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.email-popup {
+    width: 100%;
+    max-width: 420px;
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 30px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 0 60px rgba(239,68,68,0.35);
+    transform: scale(0.85);
+    transition: 0.4s cubic-bezier(.175,.885,.32,1.275);
+}
+
+.email-overlay.active .email-popup {
+    transform: scale(1);
+}
+
+.email-popup h3 {
+    font-size: 24px;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg,var(--primary),var(--secondary),var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.email-popup p {
+    font-size: 14px;
+    opacity: 0.85;
+    margin-bottom: 16px;
+}
+
+.email-popup input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+}
+
+.email-actions {
+    display: flex;
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.email-actions button {
+    flex: 1;
+}
+
+.email-actions .cancel {
+    background: rgba(255,255,255,0.12);
+}
 </style>
 </head>
 
@@ -437,7 +512,7 @@ font-size:13px;
         <h3>Have Questions?</h3>
         <p>Get in touch with our elite consultants before you start your SelfMax journey.</p>
         <div class="contact-links">
-            <a href="mailto:support@etmsources.com" class="contact-item">Email Support</a>
+            <a href="javascript:void(0)" class="contact-item" onclick="openEmailPopup()">Email Support</a>
             <a href="telegram.html" class="contact-item">Telegram</a>
             <a href="https://wa.me/923284153717" class="contact-item">WhatsApp Support</a>
         </div>
@@ -579,9 +654,46 @@ window.addEventListener('click', function(e) {
         fab.classList.remove('expanded');
     }
 });
+
+    function openEmailPopup() {
+    document.getElementById("emailOverlay").classList.add("active");
+}
+
+function closeEmailPopup() {
+    document.getElementById("emailOverlay").classList.remove("active");
+}
+
+function submitEmail() {
+    const email = document.getElementById("userEmail").value.trim();
+
+    if (!email) {
+        alert("Please enter your email.");
+        return;
+    }
+
+    alert("Email submitted successfully: " + email);
+    closeEmailPopup();
+}
+    
 </script>
 
+    <!-- EMAIL POPUP MODAL -->
+<div class="email-overlay" id="emailOverlay">
+    <div class="email-popup">
+        <h3>Contact Support</h3>
+        <p>Enter your email and our team will contact you shortly.</p>
+
+        <input type="email" id="userEmail" placeholder="Enter your email" required>
+
+        <div class="email-actions">
+            <button onclick="submitEmail()">Send</button>
+            <button class="cancel" onclick="closeEmailPopup()">Cancel</button>
+        </div>
+    </div>
+</div>
+    
 </body>
 </html>
+
 
 
