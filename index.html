@@ -277,6 +277,118 @@ font-size:13px;
 .hero{padding:80px 14px 25px}
 .cart-panel{width:100%}
 }
+
+/* Contact Section Styling */
+.contact-section {
+    max-width: 800px;
+    margin: 1px auto;
+    padding: 40px;
+    background: var(--glass);
+    backdrop-filter: blur(var(--blur));
+    border-radius: var(--radius);
+    border: 10px solid rgba(220, 20, 60, 0.05);
+    text-align: center;
+}
+
+.contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.contact-item {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 99px;
+    background: rgba(255,255,255,0.05);
+    transition: 0.3s;
+}
+
+.contact-item:hover {
+    background: var(--primary);
+    transform: translateY(-3px);
+}
+
+/* Updated Expandable FAB Styling */
+.fab-contact {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 50px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    box-shadow: var(--glow);
+    z-index: 100;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 0 18px;
+}
+
+.fab-contact.expanded {
+    width: 320px; 
+    height: 70px;
+    justify-content: flex-start;
+}
+
+/* REPLACE YOUR OLD .fab-icon BLOCK WITH THIS */
+.fab-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ADD THIS RIGHT BELOW IT */
+.fab-contact.expanded .fab-icon {
+    margin-right: 15px;
+}
+
+.fab-content {
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.fab-contact.expanded .fab-content {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.fab-content span {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    display: block;
+}
+
+.fab-content a {
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(255,255,255,0.4);
+}
+
+@media(max-width:600px) {
+    .fab-contact { bottom: 20px; right: 20px; width: 50px; height: 50px;}
+}
+
 </style>
 </head>
 
@@ -285,7 +397,7 @@ font-size:13px;
 <canvas id="particles"></canvas>
 
 <header>
-<h1>⚙️ ETM Sources</h1>
+<h1>⚙️ ETM Cources</h1>
 <button id="cartBtn">Cart (<span id="count">0</span>)</button>
 </header>
 
@@ -309,6 +421,29 @@ font-size:13px;
 
 <div class="toast" id="toast">Added to Cart</div>
 
+<div class="fab-contact" id="contactFab" onclick="toggleFab(event)">
+    <svg class="fab-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+        <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+    </svg>
+    <div class="fab-content">
+        <span>📞 +92 345 2356843</span>
+        <span>📧 <a href="mailto:guteryuiols@outlook.com">guteryuiols@outlook.com</a></span>
+    </div>
+</div>
+
+<section class="container">
+    <div class="contact-section">
+        <h3>Have Questions?</h3>
+        <p>Get in touch with our elite consultants before you start your SelfMax journey.</p>
+        <div class="contact-links">
+            <a href="mailto:support@etmsources.com" class="contact-item">Email Support</a>
+            <a href="https://t.me/yourusername" class="contact-item">Telegram</a>
+            <a href="#" class="contact-item">Discord Community</a>
+        </div>
+    </div>
+</section>
+
 <footer>© 2026 ETM COURSES — Elite UI Edition</footer>
 
 <script>
@@ -327,19 +462,31 @@ const totalEl=document.getElementById("total");
 const countEl=document.getElementById("count");
 const toast=document.getElementById("toast");
 
-let cart=JSON.parse(localStorage.getItem("cart")||"[]");
+let cart;
+try{
+    cart = JSON.parse(localStorage.getItem("cart")) || [];
+}catch{
+    cart = [];
+}
 
 function renderCourses(){
-grid.innerHTML=courses.map((c,i)=>`
+grid.innerHTML = courses.map((c,i)=>{
+
+const isAdded = cart.find(item => item.name === c.name);
+
+return `
 <div class="course">
 <img src="https://picsum.photos/600/360?${c.img}">
 <h3>${c.name}</h3>
 <p>${c.desc}</p>
 <div class="bottom">
 <span class="price">$${c.price}</span>
-<button onclick="addToCart(${i})">Add</button>
+<button onclick="addToCart(${i})" ${isAdded ? 'disabled style="opacity:0.6;cursor:not-allowed"' : ''}>
+${isAdded ? 'Added' : 'Add'}
+</button>
 </div>
-</div>`).join("");
+</div>`;
+}).join("");
 }
 
 function renderCart(){
@@ -359,15 +506,22 @@ localStorage.setItem("cart",JSON.stringify(cart));
 }
 
 function addToCart(i){
+
+const exists = cart.find(item => item.name === courses[i].name);
+if (exists) return;
+
 cart.push(courses[i]);
 renderCart();
+renderCourses();
+
 toast.classList.add("show");
 setTimeout(()=>toast.classList.remove("show"),1400);
 }
 
 function removeItem(i){
-cart.splice(i,1);
-renderCart();
+    cart.splice(i,1);
+    renderCart();
+    renderCourses();   // <-- REQUIRED
 }
 
 cartBtn.onclick=()=>cartPanel.classList.toggle("active");
@@ -402,6 +556,29 @@ ctx.fill();
 requestAnimationFrame(animate);
 }
 animate();
+
+// REPLACE YOUR OLD toggleFab FUNCTION WITH THIS
+function toggleFab(event) {
+    event.stopPropagation(); // Prevents the 'window' click from closing it instantly
+    const fab = document.getElementById('contactFab');
+    fab.classList.toggle('expanded');
+}
+
+// Ensure the window listener stays as is below it
+window.addEventListener('click', function(e) {
+    const fab = document.getElementById('contactFab');
+    if (!fab.contains(e.target) && fab.classList.contains('expanded')) {
+        fab.classList.remove('expanded');
+    }
+});
+
+// Optional: Close the FAB if the user clicks anywhere else on the screen
+window.addEventListener('click', function(e) {
+    const fab = document.getElementById('contactFab');
+    if (!fab.contains(e.target) && fab.classList.contains('expanded')) {
+        fab.classList.remove('expanded');
+    }
+});
 </script>
 
 </body>
