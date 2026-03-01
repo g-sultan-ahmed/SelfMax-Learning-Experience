@@ -3,49 +3,187 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Telegram Support</title>
+<title>ETM Support — Telegram</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
+:root{
+--bg:#020617;
+--card:rgba(30,5,5,.78);
+--glass:rgba(30,5,5,.6);
+--text:#f5dede;
+
+--primary:#ef4440;
+--secondary:#eb0000;
+--accent:#ceff90;
+
+--radius:22px;
+--blur:32px;
+--glow:0 0 45px rgba(239,68,68,.65);
+}
+
+*{box-sizing:border-box}
+
 body{
-    margin:0;
-    font-family:system-ui,Segoe UI,Roboto,Arial;
-    background:#020617;
-    color:#f5dede;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
+margin:0;
+font-family:Inter,system-ui;
+background:var(--bg);
+color:var(--text);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+overflow:hidden;
 }
 
-.box{
-    background:rgba(30,5,5,.85);
-    padding:40px;
-    border-radius:18px;
-    text-align:center;
-    max-width:420px;
-    width:92%;
+/* Ambient glow */
+body::before{
+content:"";
+position:fixed;
+inset:-40%;
+background:
+radial-gradient(circle at 20% 20%, rgba(56,189,248,.22), transparent 35%),
+radial-gradient(circle at 80% 30%, rgba(168,85,247,.22), transparent 35%),
+radial-gradient(circle at 50% 80%, rgba(34,197,94,.22), transparent 40%);
+animation:floatGlow 26s linear infinite;
+pointer-events:none;
+z-index:-2;
 }
 
-a{
-    display:inline-block;
-    margin-top:18px;
-    padding:14px 30px;
-    background:linear-gradient(135deg,#ef4440,#eb0000);
-    border-radius:999px;
-    color:white;
-    text-decoration:none;
-    font-weight:700;
+@keyframes floatGlow{
+0%{transform:translate(0,0)}
+50%{transform:translate(-8%,6%)}
+100%{transform:translate(0,0)}
 }
+
+canvas{
+position:fixed;
+inset:0;
+z-index:-1;
+}
+
+.support-card{
+background:var(--card);
+backdrop-filter:blur(var(--blur));
+border-radius:var(--radius);
+padding:42px 36px 44px;
+max-width:420px;
+width:90%;
+text-align:center;
+position:relative;
+overflow:hidden;
+}
+
+.support-card::after{
+content:"";
+position:absolute;
+inset:-1px;
+border-radius:inherit;
+background:linear-gradient(135deg,var(--primary),var(--secondary),var(--accent));
+opacity:.35;
+filter:blur(24px);
+z-index:-1;
+}
+
+h1{
+margin:0 0 10px;
+font-size:34px;
+font-weight:900;
+background:linear-gradient(135deg,var(--primary),var(--secondary),var(--accent));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+p{
+font-size:15px;
+opacity:.9;
+line-height:1.7;
+margin-bottom:28px;
+}
+
+.telegram-btn{
+display:inline-flex;
+align-items:center;
+gap:12px;
+padding:14px 30px;
+border-radius:999px;
+background:linear-gradient(135deg,var(--primary),var(--secondary));
+color:white;
+text-decoration:none;
+font-weight:800;
+font-size:15px;
+transition:.4s cubic-bezier(.175,.885,.32,1.275);
+box-shadow:0 14px 35px rgba(56,189,248,.35);
+}
+
+.telegram-btn:hover{
+transform:translateY(-4px) scale(1.06);
+box-shadow:var(--glow);
+}
+
+.telegram-btn svg{
+width:22px;
+height:22px;
+}
+
+.note{
+margin-top:18px;
+font-size:12px;
+opacity:.6;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="box">
-    <h2>Telegram Support</h2>
-    <p>Click the button below to open our official Telegram chat.</p>
-    <a href="https://t.me/self.max_LE" target="_blank">Open Telegram</a>
+<canvas id="particles"></canvas>
+
+<div class="support-card">
+    <h1>Telegram Support</h1>
+    <p>Instant priority support from our elite consultants. Click below to open direct Telegram chat.</p>
+
+    <a class="telegram-btn" href="https://t.me/ETMsupport" target="_blank">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M22.05 2.19 2.8 9.47c-1.3.5-1.29 1.22-.24 1.54l4.97 1.55 1.9 5.76c.24.66.13.92.96.92.64 0 .92-.29 1.27-.62l2.38-2.3 4.95 3.66c.91.5 1.56.24 1.79-.84l3.24-15.27c.32-1.33-.5-1.94-1.77-1.48z"/>
+        </svg>
+        Open Telegram Chat
+    </a>
+
+    <div class="note">Available 24/7 • Fastest Response</div>
 </div>
+
+<script>
+const canvas=document.getElementById("particles");
+const ctx=canvas.getContext("2d");
+let w,h;
+
+function resize(){
+w=canvas.width=window.innerWidth;
+h=canvas.height=window.innerHeight;
+}
+window.addEventListener("resize",resize);
+resize();
+
+const particles=Array.from({length:350},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*2+1,v:Math.random()*0.6+0.3}));
+
+function animate(){
+ctx.clearRect(0,0,w,h);
+particles.forEach(p=>{
+p.y+=p.v;
+if(p.y>h){p.y=0;p.x=Math.random()*w}
+ctx.beginPath();
+ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+ctx.fillStyle="rgba(56,189,248,.25)";
+ctx.fill();
+});
+requestAnimationFrame(animate);
+}
+animate();
+</script>
 
 </body>
 </html>
